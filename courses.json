@@ -1,0 +1,299 @@
+{
+  "school": "McKinley Middle School",
+  "year": "2026–2027",
+
+  "grades": {
+
+    "6": {
+      "autoAssigned": [
+        "Math (All Year)",
+        "Language Arts (All Year)",
+        "Science (All Year)",
+        "Social Studies (All Year)",
+        "PE (All Year)",
+        "Advisory"
+      ],
+      "yearLongElectives": [
+        {
+          "name": "Beginning Band",
+          "code": "73004",
+          "navajo": false,
+          "description": "An introduction to playing brasswind, woodwind, and percussion instruments. Students learn proper instrument hold, tone production, articulation, musical notation, and simple melodies. Music theory and history are covered as they relate to performance pieces. After-school performances are required."
+        },
+        {
+          "name": "Beginning Orchestra",
+          "code": "73504",
+          "navajo": false,
+          "description": "An introduction to violin, viola, cello, and string bass. Students learn proper instrument and bow hold, tone production, articulation, musical notation, and simple orchestral compositions. Music theory and history are covered as they relate to performance. After-school performances are required."
+        },
+        {
+          "name": "Chorus",
+          "code": "74004",
+          "navajo": false,
+          "description": "For students with prior singing experience. Emphasis on singing technique, ensemble skills, part singing, performance techniques, music reading, sight-reading, and ear training. Choreography may be included. Students explore choral literature at an intermediate level."
+        },
+        {
+          "name": "Native American Studies",
+          "code": "52100",
+          "navajo": false,
+          "description": "Students conduct self-assessments and develop a personal development plan through projects centered on cultural identity. Projects draw on historical, linguistic, and literary research. Students monitor academic skills, cultural knowledge, and self-esteem. Methods include cooperative learning, tutoring, and study skills."
+        },
+        {
+          "name": "Navajo Language",
+          "code": "61100",
+          "navajo": true,
+          "description": "You must be Navajo to take this class. An introduction to Diné Bizaad, covering high tones, slash L, nasal sounds, and digraphs. Topics include clans, sacred mountains, kinship, colors, numbers, verbs, months, seasons, the universe, and cultural traditions. The goal is to speak and understand the language through stories, songs, and activities."
+        }
+      ],
+      "semesterElectives": [
+        {
+          "name": "Art",
+          "code": "70901",
+          "description": "Introduces foundational skills and techniques of traditional visual art. Covers studio practices with a focus on creativity, creative problem-solving, and personal expression."
+        },
+        {
+          "name": "Leadership",
+          "code": "5100s",
+          "description": "Develops skills in teamwork, communication, responsibility, and problem-solving. Students plan school events, promote school spirit, organize service projects, and support the school community through hands-on leadership experiences."
+        },
+        {
+          "name": "Creative Writing",
+          "code": "24909",
+          "description": "Students develop their writing voice through book creation, short stories, and narrative writing. Emphasizes imagination, structure, revision, and peer feedback while building creative expression and writing confidence."
+        },
+        {
+          "name": "Technology",
+          "code": "879s1",
+          "description": "Covers basic operations, keyboarding, social and ethical issues, and a variety of technology tools for productivity, communication, research, and problem-solving. Students learn word processing, Internet research, databases, and spreadsheets. Multimedia is introduced."
+        }
+      ]
+    },
+
+    "7": {
+      "autoAssigned": [
+        "Math (All Year)",
+        "Language Arts (All Year)",
+        "Science (All Year)",
+        "Social Studies (All Year)",
+        "Advisory"
+      ],
+      "yearLongElectives": [
+        {
+          "name": "PE",
+          "code": "91000",
+          "navajo": false,
+          "description": "Students participate in physical activity critical to health development and maintenance. The goal is to develop a physically educated individual with the knowledge, skills, and confidence to enjoy a lifetime of healthful physical activity."
+        },
+        {
+          "name": "Art I & Art II",
+          "code": "70901/70902",
+          "navajo": false,
+          "description": "Art I (Semester 1): Builds foundational visual art skills — Elements of Art, creative expression, and artistic problem-solving using a variety of tools and materials. Art II (Semester 2): Advances to printmaking, ceramics, and mixed media. Emphasizes planning, revision, artistic voice, and technical refinement."
+        },
+        {
+          "name": "Band",
+          "code": "73004/73006",
+          "navajo": false,
+          "description": "Further development of brasswind, woodwind, and percussion skills. Covers proper technique, tone, articulation, notation, and band-level compositions. Music theory and history are integrated. After-school performances are required."
+        },
+        {
+          "name": "Orchestra",
+          "code": "73504/73506",
+          "navajo": false,
+          "description": "Further instruction on violin, viola, cello, and string bass. Students refine technique, notation reading, and perform orchestral compositions. After-school performances and rehearsals are required. Students may audition for Albuquerque Junior Symphony/Orchestra."
+        },
+        {
+          "name": "Chorus",
+          "code": "74004/74005",
+          "navajo": false,
+          "description": "For students with prior singing experience. Focuses on technique, ensemble skills, part singing, performance, sight-reading, and ear training. Choreography may be included. Intermediate-level choral literature."
+        },
+        {
+          "name": "Guitar",
+          "code": "735a1",
+          "navajo": false,
+          "description": "Introduces guitar fundamentals: basic chords, strumming patterns, note reading, and proper technique. Students explore different musical styles, perform songs, and work independently and collaboratively. Emphasizes listening skills, creativity, and responsibility."
+        },
+        {
+          "name": "Native American Studies",
+          "code": "52100",
+          "navajo": false,
+          "description": "Students develop a personal plan through culturally-centered projects drawing on historical, linguistic, and literary research. Monitors academic skills, cultural knowledge, and self-esteem. Methods include cooperative learning, tutoring, and study skills."
+        },
+        {
+          "name": "Navajo Language",
+          "code": "61101",
+          "navajo": true,
+          "description": "You must be Navajo to take this class. Continuation of Diné Bizaad: high tones, slash L, nasal sounds, digraphs, clans, sacred mountains, kinship, colors, numbers, verbs, months, seasons, and cultural traditions. Goal is to speak and understand the language through stories, songs, and activities."
+        }
+      ],
+      "semesterElectives": [
+        {
+          "name": "PE (Semester)",
+          "code": "9100s",
+          "description": "Semester-length Physical Education. Students participate in physical activity to develop health, knowledge, and skills for a lifetime of healthful physical activity. Do NOT choose this if you selected full-year PE."
+        },
+        {
+          "name": "Art",
+          "code": "70901/70902",
+          "note": "Placement made by Art Teacher",
+          "description": "Semester art class — placement is determined by the Art Teacher based on prior experience. Do NOT choose this if you selected full-year Art I & II."
+        },
+        {
+          "name": "Leadership",
+          "code": "5100s",
+          "description": "Develops teamwork, communication, responsibility, and problem-solving. Students plan school events, promote spirit, organize service projects, and build community through hands-on leadership experiences."
+        },
+        {
+          "name": "Foods",
+          "code": "82900",
+          "description": "Expands knowledge in basic food preparation, reading and following recipes, conventional and microwave cooking, nutrition, and personal food choices. Emphasizes career exploration in food service through a restaurant simulation format."
+        },
+        {
+          "name": "eSports",
+          "code": "501s",
+          "limitedSpace": true,
+          "description": "Explores esports through experiential learning. Students develop teamwork, problem-solving, and digital skills; build a portfolio; and gain experience organizing school esports events. Emphasizes leadership and responsible digital citizenship. Aligned with ISTE standards."
+        },
+        {
+          "name": "Digital Boss Lab",
+          "code": "87900",
+          "description": "Students create a mock digital business: design a logo in Canva, build a website, create a digital product, build a budget spreadsheet, track sales in Google Sheets, and analyze profit/loss. Ends with a Shark Tank-style pitch day."
+        },
+        {
+          "name": "Consumer Decisions",
+          "code": "82803",
+          "description": "Focuses on responsible consumer skills: budgeting, saving, advertising influence, comparison shopping, and financial responsibility. Builds critical thinking for informed economic choices."
+        },
+        {
+          "name": "Outdoor Adventure Club",
+          "code": "506r3",
+          "description": "An experiential elective using community partnerships for off-campus activities like rock climbing and skiing. Students engage in ecology lessons and environmental stewardship. Bridges PE and applied science; keeps students actively engaged."
+        },
+        {
+          "name": "Drama",
+          "code": "75000",
+          "description": "Builds confidence, creativity, and collaboration through theatre. Students develop understanding of theatre conventions and skills in communication, character development, and stagecraft."
+        }
+      ]
+    },
+
+    "8": {
+      "autoAssigned": [
+        "Math (All Year)",
+        "Language Arts (All Year)",
+        "Science (All Year)",
+        "Social Studies (All Year)",
+        "Health (1 Semester — Required by State)",
+        "Advisory"
+      ],
+      "yearLongElectives": [
+        {
+          "name": "PE",
+          "code": "91000",
+          "navajo": false,
+          "description": "Students participate in physical activity critical to health development and maintenance. The goal is to develop a physically educated individual with the knowledge, skills, and confidence to enjoy a lifetime of healthful physical activity."
+        },
+        {
+          "name": "Art I & Art II",
+          "code": "70901/70902",
+          "navajo": false,
+          "description": "Art I (Semester 1): Foundational visual art skills — Elements of Art, creative expression, artistic problem-solving. Art II (Semester 2): Advanced printmaking, ceramics, and mixed media. Emphasizes planning, revision, artistic voice, and technical refinement."
+        },
+        {
+          "name": "Band",
+          "code": "73004/73006/73007",
+          "navajo": false,
+          "description": "Further development of brasswind, woodwind, and percussion skills. Covers technique, tone, articulation, notation, and compositions. Music theory and history integrated. After-school performances required."
+        },
+        {
+          "name": "Orchestra",
+          "code": "73504/73506",
+          "navajo": false,
+          "description": "Advanced violin, viola, cello, and string bass. Students refine technique, notation, and perform orchestral compositions. After-school performances and rehearsals required. Students may audition for Albuquerque Junior Symphony/Orchestra."
+        },
+        {
+          "name": "Chorus",
+          "code": "74004/74005",
+          "navajo": false,
+          "description": "For students with prior singing experience. Technique, ensemble skills, part singing, performance, sight-reading, and ear training. Choreography may be included. Intermediate-level choral literature."
+        },
+        {
+          "name": "Guitar",
+          "code": "735a1",
+          "navajo": false,
+          "description": "Guitar fundamentals: chords, strumming patterns, note reading, and proper technique. Students explore musical styles, perform songs, and work independently and collaboratively. Emphasizes listening, creativity, and responsibility."
+        },
+        {
+          "name": "Native American Studies",
+          "code": "52100",
+          "navajo": false,
+          "description": "Culturally-centered projects drawing on historical, linguistic, and literary research. Students develop personal plans, monitor academic and cultural growth, and build self-esteem through cooperative learning, tutoring, and study skills."
+        },
+        {
+          "name": "Navajo Language",
+          "code": "61100",
+          "navajo": true,
+          "description": "You must be Navajo to take this class. Diné Bizaad: high tones, slash L, nasal sounds, digraphs, clans, sacred mountains, kinship, colors, numbers, verbs, months, seasons, and cultural traditions. Goal is to speak and understand the language through stories, songs, and activities."
+        }
+      ],
+      "semesterElectives": [
+        {
+          "name": "PE (Semester)",
+          "code": "9100s",
+          "description": "Semester-length Physical Education. Develops health, knowledge, and skills for a lifetime of physical activity. Do NOT choose this if you selected full-year PE."
+        },
+        {
+          "name": "Art",
+          "code": "70901/70902",
+          "note": "Placement made by Art Teacher",
+          "description": "Semester art class — placement determined by the Art Teacher. Do NOT choose this if you selected full-year Art I & II."
+        },
+        {
+          "name": "Leadership",
+          "code": "5100s",
+          "description": "Teamwork, communication, responsibility, and problem-solving. Students plan events, promote spirit, organize service projects, and build community through hands-on leadership experiences."
+        },
+        {
+          "name": "Foods",
+          "code": "82900",
+          "description": "Basic food preparation, recipe reading, conventional and microwave cooking, nutrition, and personal food choices. Explores food service careers through a restaurant simulation format."
+        },
+        {
+          "name": "eSports",
+          "code": "501s",
+          "limitedSpace": true,
+          "description": "Explores esports through experiential learning. Develops teamwork, problem-solving, and digital skills. Students build a portfolio and gain experience organizing esports events. Aligned with ISTE standards."
+        },
+        {
+          "name": "Digital Boss Lab",
+          "code": "87900",
+          "description": "Create a mock digital business: design a logo in Canva, build a website, create a digital product, build a budget spreadsheet, track sales in Google Sheets, and analyze profit/loss. Ends with a Shark Tank-style pitch day."
+        },
+        {
+          "name": "Consumer Decisions",
+          "code": "82803",
+          "description": "Responsible consumer skills: budgeting, saving, advertising influence, comparison shopping, and financial responsibility. Builds critical thinking for informed economic choices."
+        },
+        {
+          "name": "Outdoor Adventure Club",
+          "code": "506r3",
+          "description": "Off-campus experiential learning via community partnerships — rock climbing, skiing, ecology lessons, and environmental stewardship. Bridges PE and applied science."
+        },
+        {
+          "name": "Drama",
+          "code": "75000",
+          "description": "Builds confidence, creativity, and collaboration through theatre conventions, character development, communication, and stagecraft."
+        },
+        {
+          "name": "Student Aide",
+          "code": "08375",
+          "limitedSpace": true,
+          "note": "Requires application, 2.5 GPA, approval",
+          "description": "Students support daily school operations in areas like the main office, library, or IGS. Develops responsibility, organization, and leadership. Requires an application, 2.5 GPA or higher, and good academic/behavioral standing. Space is limited and approval is required."
+        }
+      ]
+    }
+
+  }
+}
