@@ -365,6 +365,7 @@
 
 <script>
 const COURSES_URL = 'courses.json';
+const SHEET_URL   = 'https://script.google.com/macros/s/AKfycbyvml41xORF_4Cu-0Ap0CPObxQYpuxiODQvvvV8a9-MRTZg4HXxO9iQmj0fpILXvEXF/exec';
 let CFG = null;
 
 // ── POPOVER ENGINE ─────────────────────────────────────────────────────────────
@@ -642,6 +643,32 @@ function formatTimestamp() {
 
 function showSuccess(id, studentInfo, electives, extras) {
   const box = document.getElementById(id);
+
+  // ── POST TO GOOGLE SHEET ──────────────────────────────
+  const gradeInfo  = studentInfo.find(s => s.label === 'Grade') || {};
+  const formatInfo = electives.find(s => s.label === 'Format') || {};
+  const choiceRows = electives.filter(s => s.label !== 'Format');
+  const choices    = choiceRows.map(s => s.value);
+  const extraVals  = (extras||[]).map(s => s.label + ': ' + s.value);
+
+  const payload = {
+    last:    STUDENT.last,
+    first:   STUDENT.first,
+    id:      STUDENT.id,
+    grade:   gradeInfo.value  || STUDENT.grade,
+    format:  formatInfo.value || '',
+    choices: choices,
+    extras:  extraVals
+  };
+
+  fetch(SHEET_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(err => console.warn('Sheet POST failed:', err));
+  // ─────────────────────────────────────────────────────
+
   const infoRows = studentInfo.map(s=>`<div class="summary-row"><span class="summary-label">${s.label}:</span><span>${s.value}</span></div>`).join('');
   const electiveRows = electives.map(s=>`<div class="summary-row"><span class="summary-label">${s.label}:</span><span>${s.value}</span></div>`).join('');
   const extraRows = (extras||[]).map(s=>`<div class="summary-row"><span class="summary-label">${s.label}:</span><span>${s.value}</span></div>`).join('');
