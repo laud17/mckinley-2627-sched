@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>McKinley Middle School — Course Selection</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1f3d;
+    --blue: #1a4db5;
+    --sky: #3b82f6;
+    --gold: #f59e0b;
+    --mint: #10b981;
+    --red: #ef4444;
+    --bg: #f0f4ff;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #cbd5e1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .hero {
+    background: var(--navy); color: white;
+    padding: 2.5rem 2rem 2rem; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(59,130,246,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(245,158,11,0.15) 0%, transparent 60%);
+  }
+  .hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+  .hero-badge {
+    display: inline-block; background: var(--gold); color: var(--navy);
+    font-family: 'Space Mono', monospace; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.3rem 0.9rem; border-radius: 999px; margin-bottom: 0.8rem;
+  }
+  .hero h1 { font-size: clamp(1.8rem,5vw,2.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 0.4rem; }
+  .hero h1 span { color: var(--gold); }
+  .hero p { color: #94a3b8; font-size: 1rem; }
+
+  .tab-bar {
+    display: flex; justify-content: center; gap: 0.5rem;
+    padding: 1.5rem 1rem 0; background: var(--navy);
+    position: sticky; top: 0; z-index: 100;
+    border-bottom: 3px solid var(--blue);
+  }
+  .tab-btn {
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95rem;
+    padding: 0.65rem 1.5rem; border-radius: 10px 10px 0 0;
+    border: none; cursor: pointer;
+    background: rgba(255,255,255,0.08); color: #94a3b8; transition: all 0.2s;
+  }
+  .tab-btn:hover { background: rgba(255,255,255,0.15); color: white; }
+  .tab-btn.active { background: var(--bg); color: var(--navy); }
+
+  .container { max-width: 780px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  .card {
+    background: var(--card); border-radius: 16px; padding: 1.75rem;
+    margin-bottom: 1.25rem; border: 2px solid transparent;
+    box-shadow: 0 2px 12px rgba(15,31,61,0.07); transition: border-color 0.2s;
+  }
+  .card:focus-within { border-color: var(--sky); }
+  .card-title {
+    font-size: 1rem; font-weight: 800; font-family: 'Space Mono', monospace;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--blue); margin-bottom: 0.25rem;
+  }
+  .card-subtitle { font-size: 0.88rem; color: var(--muted); margin-bottom: 1.25rem; }
+
+  .info-box { border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.9rem; line-height: 1.55; }
+  .info-box.blue { background: #eff6ff; border-left: 4px solid var(--sky); }
+  .info-box.gold { background: #fffbeb; border-left: 4px solid var(--gold); }
+  .info-box.red  { background: #fef2f2; border-left: 4px solid var(--red); }
+  .info-box strong { display: block; margin-bottom: 0.25rem; font-weight: 800; }
+
+  .auto-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+  .auto-pill {
+    background: #f1f5f9; border: 1.5px solid var(--border);
+    border-radius: 999px; padding: 0.3rem 0.85rem;
+    font-size: 0.82rem; font-weight: 700; color: var(--muted);
+    display: flex; align-items: center; gap: 0.35rem;
+  }
+  .auto-pill .check { color: var(--mint); }
+
+  .option-toggle { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .toggle-card {
+    flex: 1; min-width: 160px; border: 2.5px solid var(--border);
+    border-radius: 12px; padding: 1rem; cursor: pointer;
+    transition: all 0.15s; background: white; user-select: none;
+  }
+  .toggle-card input[type="radio"] { display: none; }
+  .toggle-card.selected { border-color: var(--blue); background: #eff6ff; }
+  .toggle-card .tc-title { font-weight: 800; font-size: 0.92rem; margin-bottom: 0.2rem; }
+  .toggle-card .tc-desc { font-size: 0.8rem; color: var(--muted); }
+
+  /* ── ELECTIVE ROW ─────────────────────────────────────── */
+  .elective-item { display: grid; grid-template-columns: 1.8rem 1fr; gap: 0.75rem; align-items: start; margin-bottom: 0.85rem; }
+  .rank-badge {
+    width: 1.8rem; height: 1.8rem; border-radius: 50%;
+    background: var(--navy); color: white; font-weight: 800; font-size: 0.82rem;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 0.45rem; flex-shrink: 0;
+  }
+  .rank-badge.r1 { background: var(--gold); color: var(--navy); }
+  .rank-badge.r2 { background: #94a3b8; }
+  .rank-badge.r3 { background: #b45309; color: white; }
+
+  /* Select + info button wrapper */
+  .select-row {
+    display: flex; gap: 0.5rem; align-items: center;
+  }
+  select {
+    flex: 1; padding: 0.65rem 2.2rem 0.65rem 0.9rem;
+    border: 2px solid var(--border); border-radius: 10px;
+    font-family: 'Nunito', sans-serif; font-size: 0.92rem; font-weight: 600;
+    color: var(--text); background: white; outline: none; transition: border-color 0.15s;
+    appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.85rem center;
+    background-color: white;
+  }
+  select:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+
+  /* Info button */
+  .info-btn {
+    flex-shrink: 0; width: 2rem; height: 2rem;
+    border-radius: 50%; border: 2px solid var(--border);
+    background: white; color: var(--muted);
+    font-size: 0.85rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s; position: relative;
+    font-family: 'Space Mono', monospace;
+  }
+  .info-btn:hover { border-color: var(--sky); color: var(--blue); background: #eff6ff; }
+  .info-btn.has-desc { border-color: var(--sky); color: var(--blue); }
+  .info-btn.disabled-btn { opacity: 0.3; cursor: default; pointer-events: none; }
+
+  /* ── POPOVER ──────────────────────────────────────────── */
+  .desc-popover {
+    position: fixed;
+    z-index: 9999;
+    max-width: 320px;
+    background: var(--navy);
+    color: white;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 8px 32px rgba(15,31,61,0.35);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .desc-popover.visible { opacity: 1; }
+  .desc-popover-name {
+    font-weight: 900; font-size: 0.9rem;
+    margin-bottom: 0.4rem; color: var(--gold);
+    font-family: 'Space Mono', monospace;
+  }
+  .desc-popover-code {
+    font-size: 0.72rem; color: #94a3b8;
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 0.5rem;
+  }
+  .desc-popover-text { color: #e2e8f0; }
+  .desc-popover-note {
+    margin-top: 0.5rem; padding: 0.35rem 0.6rem;
+    background: rgba(245,158,11,0.2); border-radius: 6px;
+    color: var(--gold); font-size: 0.78rem; font-weight: 700;
+  }
+  .desc-popover-navajo {
+    margin-top: 0.5rem; padding: 0.35rem 0.6rem;
+    background: rgba(239,68,68,0.2); border-radius: 6px;
+    color: #fca5a5; font-size: 0.78rem; font-weight: 700;
+  }
+
+  /* ── OTHER INPUTS ─────────────────────────────────────── */
+  input[type="text"], input[type="email"] {
+    width: 100%; padding: 0.65rem 0.9rem;
+    border: 2px solid var(--border); border-radius: 10px;
+    font-family: 'Nunito', sans-serif; font-size: 0.92rem; font-weight: 600;
+    color: var(--text); background: white; outline: none; transition: border-color 0.15s;
+  }
+  input[type="text"]:focus, input[type="email"]:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+  input.has-error { border-color: var(--red) !important; }
+
+  .field-label { font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 0.35rem; display: block; }
+
+  .navajo-note { font-size: 0.8rem; color: var(--red); font-weight: 700; margin-top: 0.4rem; display: none; }
+  .navajo-note.show { display: block; }
+  .course-note-tag { display: none; font-size: 0.75rem; color: var(--muted); font-weight: 600; margin-top: 0.25rem; }
+  .course-note-tag.show { display: block; }
+
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .input-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  @media(max-width:520px) { .input-row, .input-row.three { grid-template-columns: 1fr; } }
+  .input-group { display: flex; flex-direction: column; }
+
+  .divider {
+    text-align: center; color: var(--muted); font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin: 1.5rem 0 1rem; display: flex; align-items: center; gap: 0.75rem;
+  }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .check-label { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; cursor: pointer; margin-bottom: 0.5rem; font-size: 0.92rem; }
+  .check-label:last-child { margin-bottom: 0; }
+  input[type="checkbox"] { width: 1rem; height: 1rem; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
+
+  .ack-box { background: #fefce8; border: 2px solid var(--gold); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+  .ack-box p { font-size: 0.88rem; line-height: 1.6; color: var(--text); margin-bottom: 0.75rem; }
+  .ack-box p:last-of-type { margin-bottom: 1rem; }
+  .ack-check { display: flex; align-items: flex-start; gap: 0.65rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+  .ack-check input { margin-top: 0.15rem; width: 1.1rem; height: 1.1rem; flex-shrink: 0; accent-color: var(--navy); }
+
+  .submit-zone { margin-top: 2rem; text-align: center; }
+  .submit-btn {
+    background: var(--navy); color: white; font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 1.05rem; padding: 0.9rem 2.5rem;
+    border-radius: 12px; border: none; cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+  }
+  .submit-btn:hover { background: var(--blue); transform: translateY(-2px); }
+
+  .error-msg { color: var(--red); font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem; display: none; padding: 0.6rem 1rem; background: #fef2f2; border-radius: 8px; border: 1.5px solid #fca5a5; }
+  .error-msg.show { display: block; }
+
+  .success-box { display: none; background: #f0fdf4; border: 2px solid var(--mint); border-radius: 14px; padding: 1.5rem; margin-top: 1.5rem; }
+  .success-box h3 { color: var(--mint); font-size: 1.1rem; margin-bottom: 0.75rem; }
+  .summary-section { margin-bottom: 0.75rem; }
+  .summary-section-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.35rem; }
+  .summary-row { display: flex; gap: 0.5rem; margin-bottom: 0.3rem; font-size: 0.9rem; }
+  .summary-label { font-weight: 800; min-width: 160px; color: var(--navy); }
+  .summary-divider { height: 1px; background: #bbf7d0; margin: 0.6rem 0; }
+  .timestamp { font-size: 0.78rem; color: var(--muted); margin-top: 0.75rem; font-style: italic; }
+
+  .grade-pane { display: none; }
+  .grade-pane.active { display: block; }
+  .hidden { display: none !important; }
+  .loading { text-align: center; padding: 3rem; color: var(--muted); font-weight: 700; }
+
+  .grade-pick-btn {
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem;
+    padding: 0.85rem 2rem; border-radius: 12px; border: 2.5px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08); color: white; cursor: pointer;
+    transition: all 0.18s; letter-spacing: 0.01em;
+  }
+  .grade-pick-btn:hover {
+    background: var(--gold); color: var(--navy);
+    border-color: var(--gold); transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245,158,11,0.35);
+  }
+
+  /* Intake screen */
+  @media(max-width:480px) { .intake-grid { grid-template-columns: 1fr !important; } }
+  .intake-label {
+    display: block; color: #94a3b8; font-size: 0.75rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem;
+    font-family: 'Space Mono', monospace;
+  }
+  .intake-input {
+    width: 100%; padding: 0.75rem 1rem;
+    background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 10px; color: white; font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem; font-weight: 600; outline: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .intake-input::placeholder { color: rgba(255,255,255,0.3); }
+  .intake-input:focus { border-color: var(--gold); background: rgba(255,255,255,0.1); }
+  .intake-input.intake-error { border-color: #ef4444; }
+
+  /* Grade radio cards on intake */
+  .grade-radio-card {
+    flex: 1; min-width: 120px; display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.7rem 1rem; border-radius: 10px; cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.15); color: #94a3b8;
+    font-weight: 800; font-size: 0.92rem; transition: all 0.15s;
+    background: rgba(255,255,255,0.05); user-select: none;
+  }
+  .grade-radio-card input[type="radio"] { display: none; }
+  .grade-radio-card.selected {
+    border-color: var(--gold); background: rgba(245,158,11,0.15); color: var(--gold);
+  }
+</style>
+</head>
+<body>
+
+<!-- Single shared popover element -->
+<div class="desc-popover" id="desc-popover">
+  <div class="desc-popover-name" id="pop-name"></div>
+  <div class="desc-popover-code" id="pop-code"></div>
+  <div class="desc-popover-text" id="pop-text"></div>
+  <div class="desc-popover-note hidden" id="pop-note"></div>
+  <div class="desc-popover-navajo hidden" id="pop-navajo">⚠ You must be Navajo to take this class.</div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge" id="hero-badge">🚀 McKinley Middle School</div>
+    <h1>Course Selection <span id="hero-year">…</span></h1>
+    <p>Select your grade below to get started. Hover the <strong style="color:var(--gold)">ℹ</strong> button next to any course to read its description.</p>
+  </div>
+</div>
+
+<!-- ═══ STEP 1: INTAKE FORM ════════════════════════════════════════════════ -->
+<div id="intake-screen" style="background:var(--navy);padding:0 1rem 3rem;border-bottom:3px solid var(--blue);">
+  <div style="max-width:560px;margin:0 auto;">
+    <p style="color:#94a3b8;font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding-top:2rem;margin-bottom:1.25rem;text-align:center;">Step 1 of 2 — Your Information</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;" class="intake-grid">
+      <div>
+        <label class="intake-label" for="intake-lastname">Last Name</label>
+        <input class="intake-input" type="text" id="intake-lastname" placeholder="Last name" autocomplete="family-name">
+      </div>
+      <div>
+        <label class="intake-label" for="intake-firstname">First Name</label>
+        <input class="intake-input" type="text" id="intake-firstname" placeholder="First name" autocomplete="given-name">
+      </div>
+    </div>
+
+    <div style="margin-bottom:0.75rem;">
+      <label class="intake-label" for="intake-studentid">Student ID #</label>
+      <input class="intake-input" type="text" id="intake-studentid" placeholder="Student ID number">
+    </div>
+
+    <div style="margin-bottom:1.5rem;">
+      <label class="intake-label">Grade You Are Going Into Next Year</label>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.4rem;">
+        <label class="grade-radio-card" id="grc-6"><input type="radio" name="intake-grade" value="6" onchange="highlightGradeCard()"> 6th Grade</label>
+        <label class="grade-radio-card" id="grc-7"><input type="radio" name="intake-grade" value="7" onchange="highlightGradeCard()"> 7th Grade</label>
+        <label class="grade-radio-card" id="grc-8"><input type="radio" name="intake-grade" value="8" onchange="highlightGradeCard()"> 8th Grade</label>
+      </div>
+    </div>
+
+    <div id="intake-error" style="display:none;background:rgba(239,68,68,0.15);border:1.5px solid #ef4444;border-radius:8px;padding:0.6rem 1rem;color:#fca5a5;font-size:0.85rem;font-weight:700;margin-bottom:0.75rem;"></div>
+
+    <button onclick="submitIntake()" style="width:100%;background:var(--gold);color:var(--navy);font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;padding:0.9rem;border-radius:12px;border:none;cursor:pointer;transition:all 0.15s;letter-spacing:0.01em;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+      Continue to Course Selection →
+    </button>
+  </div>
+</div>
+
+<!-- ═══ STEP 2: GRADE FORM ══════════════════════════════════════════════════ -->
+<!-- Locked header bar — visible after intake -->
+<div class="tab-bar hidden" id="tab-bar" style="justify-content:space-between;padding:1rem 1.5rem 0;align-items:flex-end;">
+  <div>
+    <div id="tab-student-name" style="color:#94a3b8;font-size:0.75rem;font-weight:700;font-family:'Space Mono',monospace;letter-spacing:0.08em;margin-bottom:0.3rem;"></div>
+    <div id="tab-label" style="font-family:'Space Mono',monospace;font-size:0.85rem;font-weight:700;padding:0.65rem 1.5rem;background:var(--bg);color:var(--navy);border-radius:10px 10px 0 0;display:inline-block;"></div>
+  </div>
+  <button onclick="resetIntake()" style="background:rgba(255,255,255,0.1);color:#94a3b8;border:none;border-radius:8px 8px 0 0;padding:0.5rem 1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:background 0.15s;margin-bottom:0;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">↩ Start Over</button>
+</div>
+
+<div class="container hidden" id="main-container">
+  <div class="loading hidden" id="loading">Loading course data…</div>
+  <div id="grade-6" class="grade-pane"></div>
+  <div id="grade-7" class="grade-pane"></div>
+  <div id="grade-8" class="grade-pane"></div>
+</div>
+
+<script>
+const COURSES_URL = 'courses.json';
+let CFG = null;
+
+// ── POPOVER ENGINE ─────────────────────────────────────────────────────────────
+// courseMap: { "Course Name" -> courseObject } built from CFG
+let courseMap = {};
+
+function buildCourseMap() {
+  courseMap = {};
+  for(const grade of Object.values(CFG.grades)) {
+    for(const c of [...(grade.yearLongElectives||[]), ...(grade.semesterElectives||[])]) {
+      if(!courseMap[c.name]) courseMap[c.name] = c;
+    }
+  }
+}
+
+const popover = document.getElementById('desc-popover');
+
+function showPopover(btn, courseName) {
+  const course = courseMap[courseName];
+  if(!course || !course.description) return;
+
+  document.getElementById('pop-name').textContent = course.name;
+  document.getElementById('pop-code').textContent = course.code ? 'Course #' + course.code : '';
+  document.getElementById('pop-text').textContent = course.description;
+
+  const noteEl = document.getElementById('pop-note');
+  if(course.note) { noteEl.textContent = 'ℹ ' + course.note; noteEl.classList.remove('hidden'); }
+  else noteEl.classList.add('hidden');
+
+  const navajoEl = document.getElementById('pop-navajo');
+  if(course.navajo) navajoEl.classList.remove('hidden');
+  else navajoEl.classList.add('hidden');
+
+  popover.classList.add('visible');
+  positionPopover(btn);
+}
+
+function positionPopover(btn) {
+  const rect = btn.getBoundingClientRect();
+  const pw = 320;
+  let left = rect.right + 10;
+  let top = rect.top;
+
+  // Flip left if too close to right edge
+  if(left + pw > window.innerWidth - 12) left = rect.left - pw - 10;
+  // Clamp top
+  const ph = popover.offsetHeight || 160;
+  if(top + ph > window.innerHeight - 12) top = window.innerHeight - ph - 12;
+  if(top < 8) top = 8;
+
+  popover.style.left = left + 'px';
+  popover.style.top = top + 'px';
+}
+
+function hidePopover() {
+  popover.classList.remove('visible');
+}
+
+// ── FETCH ──────────────────────────────────────────────────────────────────────
+fetch(COURSES_URL)
+  .then(r => { if(!r.ok) throw new Error('Could not load courses.json'); return r.json(); })
+  .then(data => {
+    CFG = data;
+    buildCourseMap();
+    document.getElementById('hero-year').textContent = CFG.year;
+    document.getElementById('hero-badge').textContent = '🚀 ' + CFG.school;
+    document.title = CFG.school + ' — Course Selection';
+    document.getElementById('loading').classList.add('hidden');
+    buildAllGrades();
+    initToggleCards();
+  })
+  .catch(err => {
+    document.getElementById('loading').textContent = '⚠ ' + err.message;
+  });
+
+// ── INTAKE & GRADE SELECTION ───────────────────────────────────────────────────
+// Shared student info captured at intake
+let STUDENT = { last:'', first:'', id:'', grade: null };
+
+function highlightGradeCard() {
+  const val = document.querySelector('input[name="intake-grade"]:checked')?.value;
+  [6,7,8].forEach(n => {
+    document.getElementById('grc-' + n)?.classList.toggle('selected', String(n) === val);
+  });
+}
+
+function submitIntake() {
+  const last  = document.getElementById('intake-lastname').value.trim();
+  const first = document.getElementById('intake-firstname').value.trim();
+  const id    = document.getElementById('intake-studentid').value.trim();
+  const gradeEl = document.querySelector('input[name="intake-grade"]:checked');
+  const errBox  = document.getElementById('intake-error');
+
+  // Clear previous errors
+  ['intake-lastname','intake-firstname','intake-studentid'].forEach(f => {
+    document.getElementById(f).classList.remove('intake-error');
+  });
+  errBox.style.display = 'none';
+
+  const missing = [];
+  if(!last)  { document.getElementById('intake-lastname').classList.add('intake-error');  missing.push('Last Name'); }
+  if(!first) { document.getElementById('intake-firstname').classList.add('intake-error'); missing.push('First Name'); }
+  if(!id)    { document.getElementById('intake-studentid').classList.add('intake-error'); missing.push('Student ID'); }
+  if(!gradeEl) missing.push('Grade');
+
+  if(missing.length) {
+    errBox.textContent = '⚠ Please fill in: ' + missing.join(', ');
+    errBox.style.display = 'block';
+    return;
+  }
+
+  const g = parseInt(gradeEl.value);
+  STUDENT = { last, first, id, grade: g };
+
+  // Hide intake, show form
+  document.getElementById('intake-screen').style.display = 'none';
+  document.getElementById('tab-bar').classList.remove('hidden');
+  document.getElementById('main-container').classList.remove('hidden');
+
+  // Set header label
+  const labels = {6:'6th Grade',7:'7th Grade',8:'8th Grade'};
+  document.getElementById('tab-student-name').textContent =
+    first + ' ' + last + '  •  ID: ' + id;
+  document.getElementById('tab-label').textContent = '📋 ' + labels[g];
+
+  // Show only the correct grade pane
+  [6,7,8].forEach(n => {
+    document.getElementById('grade-' + n).classList.toggle('active', n === g);
+  });
+
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function resetIntake() {
+  [6,7,8].forEach(n => document.getElementById('grade-' + n).classList.remove('active'));
+  document.getElementById('tab-bar').classList.add('hidden');
+  document.getElementById('main-container').classList.add('hidden');
+  document.getElementById('intake-screen').style.display = '';
+  STUDENT = { last:'', first:'', id:'', grade: null };
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── TOGGLE CARDS ───────────────────────────────────────────────────────────────
+function initToggleCards() {
+  document.querySelectorAll('.toggle-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const inp = this.querySelector('input[type="radio"]');
+      if(!inp) return;
+      inp.checked = true;
+      document.querySelectorAll(`input[name="${inp.name}"]`).forEach(i => {
+        i.closest('.toggle-card').classList.toggle('selected', i.checked);
+      });
+      inp.dispatchEvent(new Event('change'));
+    });
+  });
+}
+
+// ── BUILD SELECTS ──────────────────────────────────────────────────────────────
+function buildSelects(containerId, courses, count, prefix, label = 'Choice') {
+  const c = document.getElementById(containerId);
+  if(!c) return;
+  c.innerHTML = '';
+  const ordinals = ['','st','nd','rd'];
+  for(let i = 1; i <= count; i++) {
+    const rankClass = i===1?'r1':i===2?'r2':'r3';
+    const ord = ordinals[i] || 'th';
+    const opts = courses.map(course => {
+      const suffix = course.limitedSpace ? ' ⚡ LIMITED' : '';
+      return `<option value="${course.name}">${course.name}${suffix}</option>`;
+    }).join('');
+
+    c.insertAdjacentHTML('beforeend', `
+      <div class="elective-item">
+        <div class="rank-badge ${rankClass}">${i}</div>
+        <div style="width:100%">
+          <label class="field-label">${i}${ord} ${label}</label>
+          <div class="select-row">
+            <select id="${prefix}-${i}">
+              <option value="">— Select a course —</option>
+              ${opts}
+            </select>
+            <button class="info-btn disabled-btn" id="info-${prefix}-${i}" type="button" title="Course description" aria-label="Course description">ℹ</button>
+          </div>
+          <div class="navajo-note" id="nav-note-${prefix}-${i}">⚠ You must be Navajo to take Navajo Language.</div>
+          <div class="course-note-tag" id="cnote-${prefix}-${i}"></div>
+        </div>
+      </div>`);
+
+    const sel = document.getElementById(`${prefix}-${i}`);
+    const btn = document.getElementById(`info-${prefix}-${i}`);
+
+    // On select change: sync group + update info button state
+    sel.addEventListener('change', () => {
+      syncGroup(prefix, count, courses);
+      updateInfoBtn(btn, sel.value);
+    });
+
+    // Info button events
+    btn.addEventListener('mouseenter', () => {
+      const val = document.getElementById(`${prefix}-${i}`).value;
+      if(val) showPopover(btn, val);
+    });
+    btn.addEventListener('mouseleave', hidePopover);
+    btn.addEventListener('focus', () => {
+      const val = document.getElementById(`${prefix}-${i}`).value;
+      if(val) showPopover(btn, val);
+    });
+    btn.addEventListener('blur', hidePopover);
+  }
+}
+
+function updateInfoBtn(btn, courseName) {
+  const hasCourse = !!courseName && !!courseMap[courseName]?.description;
+  btn.classList.toggle('has-desc', hasCourse);
+  btn.classList.toggle('disabled-btn', !hasCourse);
+}
+
+function syncGroup(prefix, count, courses) {
+  const navajoNames = new Set((courses||[]).filter(c=>c.navajo).map(c=>c.name));
+  const noteMap = {};
+  (courses||[]).forEach(c => { if(c.note) noteMap[c.name] = c.note; });
+
+  const vals = [];
+  for(let i=1;i<=count;i++) {
+    const el = document.getElementById(`${prefix}-${i}`);
+    vals.push(el ? el.value : '');
+  }
+  for(let i=1;i<=count;i++) {
+    const sel = document.getElementById(`${prefix}-${i}`);
+    if(!sel) continue;
+    const takenByOthers = new Set(vals.filter((v,idx) => v && idx !== i-1));
+    Array.from(sel.options).forEach(opt => {
+      if(!opt.value) return;
+      const taken = takenByOthers.has(opt.value);
+      opt.disabled = taken;
+      const course = (courses||[]).find(c => c.name === opt.value);
+      const suffix = course && course.limitedSpace ? ' ⚡ LIMITED' : '';
+      opt.textContent = taken ? `${opt.value} — (already ranked)` : `${opt.value}${suffix}`;
+    });
+    const nNote = document.getElementById(`nav-note-${prefix}-${i}`);
+    if(nNote) nNote.classList.toggle('show', navajoNames.has(vals[i-1]));
+    const cNote = document.getElementById(`cnote-${prefix}-${i}`);
+    if(cNote) {
+      const txt = noteMap[vals[i-1]];
+      cNote.textContent = txt ? 'ℹ ' + txt : '';
+      cNote.classList.toggle('show', !!txt);
+    }
+    // Keep info button in sync after rank changes
+    const btn = document.getElementById(`info-${prefix}-${i}`);
+    if(btn) updateInfoBtn(btn, vals[i-1]);
+  }
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────────
+function autoPills(list) {
+  return list.map(c=>`<div class="auto-pill"><span class="check">✓</span> ${c}</div>`).join('');
+}
+function getVal(id) { const el=document.getElementById(id); return el?el.value.trim():''; }
+function isChecked(id) { const el=document.getElementById(id); return el?el.checked:false; }
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = msg; el.classList.add('show');
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+  setTimeout(()=>el.classList.remove('show'), 6000);
+}
+
+function formatTimestamp() {
+  return new Date().toLocaleString('en-US', {
+    weekday:'long', year:'numeric', month:'long', day:'numeric',
+    hour:'2-digit', minute:'2-digit', second:'2-digit'
+  });
+}
+
+function showSuccess(id, studentInfo, electives, extras) {
+  const box = document.getElementById(id);
+  const infoRows = studentInfo.map(s=>`<div class="summary-row"><span class="summary-label">${s.label}:</span><span>${s.value}</span></div>`).join('');
+  const electiveRows = electives.map(s=>`<div class="summary-row"><span class="summary-label">${s.label}:</span><span>${s.value}</span></div>`).join('');
+  const extraRows = (extras||[]).map(s=>`<div class="summary-row"><span class="summary-label">${s.label}:</span><span>${s.value}</span></div>`).join('');
+  box.innerHTML = `
+    <h3>🎉 Selection Submitted!</h3>
+    <div class="summary-section"><div class="summary-section-title">Student Information</div>${infoRows}</div>
+    <div class="summary-divider"></div>
+    <div class="summary-section"><div class="summary-section-title">Elective Selections</div>${electiveRows}</div>
+    ${extraRows?`<div class="summary-divider"></div><div class="summary-section"><div class="summary-section-title">Additional Info</div>${extraRows}</div>`:''}
+    <div class="summary-divider"></div>
+    <p style="font-size:0.82rem;color:#374151;">If a class can't run due to staffing or budget, we'll move to your next choice. <strong>Your selections are final.</strong></p>
+    <div class="timestamp">Submitted: ${formatTimestamp()}</div>`;
+  box.style.display = 'block';
+  box.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function studentInfoHTML(grade) {
+  // Info is captured at intake — no inline fields needed
+  return '';
+}
+
+function getStudentInfo(grade) {
+  // Pull from the globally captured STUDENT object
+  return { last: STUDENT.last, first: STUDENT.first, id: STUDENT.id };
+}
+
+function validateStudentInfo(grade, errId) {
+  // Already validated at intake; just double-check
+  if(!STUDENT.last || !STUDENT.first || !STUDENT.id) {
+    showError(errId, '⚠ Student information is missing. Please start over.');
+    return false;
+  }
+  return true;
+}
+
+function acknowledgmentHTML(grade) {
+  return `
+    <div class="card">
+      <div class="card-title">Course Selection Acknowledgment</div>
+      <div class="ack-box">
+        <p>Classes are created based on the number of students who choose each course. Please read the course descriptions and choose carefully. <strong>Choosing a class means you are committing to staying in that class for the full term.</strong></p>
+        <p>Once schedules are created, changes will not be made unless the school needs to make a program change.</p>
+        <label class="ack-check"><input type="checkbox" id="g${grade}-ack"> I understand that by submitting this form, my elective choices are final.</label>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+//  BUILD ALL GRADES
+// ══════════════════════════════════════════════════════════
+function buildAllGrades() { buildGrade6(); buildGrade7(); buildGrade8(); }
+
+// ── 6TH GRADE ──────────────────────────────────────────────────────────────────
+function buildGrade6() {
+  const g = CFG.grades['6'];
+  document.getElementById('grade-6').innerHTML = `
+    ${studentInfoHTML(6)}
+    <div class="card">
+      <div class="card-title">Welcome, Future Comet! 🌟</div>
+      <div class="card-subtitle">You're joining the 6th Grade Academy. Here's what you already have locked in:</div>
+      <div class="auto-list">${autoPills(g.autoAssigned)}</div>
+      <div class="info-box blue"><strong>Your turn!</strong> You get ONE elective slot — either one full-year class OR two semester classes (one per semester).</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Step 1 — Pick Your Format</div>
+      <div class="option-toggle">
+        <label class="toggle-card selected" id="tc6-yearlong">
+          <input type="radio" name="g6-format" value="yearlong" checked onchange="g6FormatChange()">
+          <div class="tc-title">📅 One Full-Year Elective</div>
+          <div class="tc-desc">One class all year long.</div>
+        </label>
+        <label class="toggle-card" id="tc6-semester">
+          <input type="radio" name="g6-format" value="semester" onchange="g6FormatChange()">
+          <div class="tc-title">✂️ Two Semester Electives</div>
+          <div class="tc-desc">Different class each half of the year.</div>
+        </label>
+      </div>
+    </div>
+    <div id="g6-yearlong-section">
+      <div class="card">
+        <div class="card-title">Step 2 — Rank Your Year-Long Choices</div>
+        <div class="card-subtitle">List in order of preference. Hover ℹ to read about a course.</div>
+        <div id="g6-yl-choices"></div>
+      </div>
+    </div>
+    <div id="g6-semester-section" class="hidden">
+      <div class="card">
+        <div class="card-title">Step 2 — Choose Your Semester Electives</div>
+        <div class="card-subtitle">Rank choices for each semester separately. Hover ℹ to read about a course.</div>
+        <div class="divider">Semester 1</div>
+        <div id="g6-s1-choices"></div>
+        <div class="divider">Semester 2</div>
+        <div id="g6-s2-choices"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Navajo Eligibility</div>
+      <div class="card-subtitle">Required only if you're considering Navajo Language.</div>
+      <label class="check-label"><input type="checkbox" id="g6-is-navajo"> I am Navajo (required to enroll in Navajo Language)</label>
+    </div>
+    ${acknowledgmentHTML(6)}
+    <div class="submit-zone">
+      <div class="error-msg" id="g6-error"></div>
+      <button class="submit-btn" onclick="submitGrade6()">Submit My 6th Grade Selections →</button>
+    </div>
+    <div class="success-box" id="g6-success"></div>`;
+
+  buildSelects('g6-yl-choices', g.yearLongElectives, 3, 'g6-yl', 'Year-Long Choice');
+  buildSelects('g6-s1-choices', g.semesterElectives,  2, 'g6-s1', 'Semester 1 Choice');
+  buildSelects('g6-s2-choices', g.semesterElectives,  2, 'g6-s2', 'Semester 2 Choice');
+}
+
+function g6FormatChange() {
+  const val = document.querySelector('input[name="g6-format"]:checked').value;
+  document.getElementById('tc6-yearlong').classList.toggle('selected', val==='yearlong');
+  document.getElementById('tc6-semester').classList.toggle('selected', val==='semester');
+  document.getElementById('g6-yearlong-section').classList.toggle('hidden', val!=='yearlong');
+  document.getElementById('g6-semester-section').classList.toggle('hidden', val!=='semester');
+}
+
+function submitGrade6() {
+  if(!validateStudentInfo(6,'g6-error')) return;
+  if(!isChecked('g6-ack')) return showError('g6-error','⚠ Please check the acknowledgment box before submitting.');
+  const fmt = document.querySelector('input[name="g6-format"]:checked').value;
+  const isNavajo = isChecked('g6-is-navajo');
+  const navajoNames = new Set(CFG.grades['6'].yearLongElectives.filter(c=>c.navajo).map(c=>c.name));
+  let electives = [];
+  if(fmt === 'yearlong') {
+    const c1=getVal('g6-yl-1');
+    if(!c1) return showError('g6-error','⚠ Please select at least your 1st choice year-long elective.');
+    if([getVal('g6-yl-1'),getVal('g6-yl-2'),getVal('g6-yl-3')].some(v=>navajoNames.has(v)) && !isNavajo)
+      return showError('g6-error','⚠ You selected Navajo Language but did not confirm you are Navajo.');
+    electives = [{label:'Format',value:'Full-Year Elective'},{label:'1st Choice',value:c1}];
+    if(getVal('g6-yl-2')) electives.push({label:'2nd Choice',value:getVal('g6-yl-2')});
+    if(getVal('g6-yl-3')) electives.push({label:'3rd Choice',value:getVal('g6-yl-3')});
+  } else {
+    if(!getVal('g6-s1-1')||!getVal('g6-s2-1')) return showError('g6-error','⚠ Please select at least a 1st choice for each semester.');
+    electives = [{label:'Format',value:'Two Semester Electives'},{label:'Sem 1 – 1st',value:getVal('g6-s1-1')}];
+    if(getVal('g6-s1-2')) electives.push({label:'Sem 1 – 2nd',value:getVal('g6-s1-2')});
+    electives.push({label:'Sem 2 – 1st',value:getVal('g6-s2-1')});
+    if(getVal('g6-s2-2')) electives.push({label:'Sem 2 – 2nd',value:getVal('g6-s2-2')});
+  }
+  const {last,first,id} = getStudentInfo(6);
+  showSuccess('g6-success',
+    [{label:'Last Name',value:last},{label:'First Name',value:first},{label:'Student ID',value:id},{label:'Grade',value:'6th'}],
+    electives, [{label:'Navajo',value:isNavajo?'Yes':'No'}]);
+}
+
+// ── 7TH GRADE ──────────────────────────────────────────────────────────────────
+function buildGrade7() {
+  const g = CFG.grades['7'];
+  document.getElementById('grade-7').innerHTML = `
+    ${studentInfoHTML(7)}
+    <div class="card">
+      <div class="card-title">Welcome, 7th Grader!</div>
+      <div class="card-subtitle">Your core classes are locked in. You need 3 elective credits total.</div>
+      <div class="auto-list">${autoPills(g.autoAssigned)}</div>
+      <div class="info-box gold"><strong>⚠ PE Reminder</strong>If you did NOT take PE in 6th grade, PE will automatically be added and counts as one elective credit.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Did you take PE in 6th grade?</div>
+      <div class="option-toggle">
+        <label class="toggle-card selected" id="tc7-pe-yes"><input type="radio" name="g7-pe6" value="yes" checked><div class="tc-title">✅ Yes, I took PE</div><div class="tc-desc">Choose 3 electives freely.</div></label>
+        <label class="toggle-card" id="tc7-pe-no"><input type="radio" name="g7-pe6" value="no"><div class="tc-title">❌ No, I did NOT take PE</div><div class="tc-desc">PE auto-added. Choose 2 more.</div></label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Step 1 — Pick Your Format</div>
+      <div class="option-toggle">
+        <label class="toggle-card selected" id="tc7-yearlong"><input type="radio" name="g7-format" value="yearlong" checked onchange="g7FormatChange()"><div class="tc-title">📅 3 Year-Long</div><div class="tc-desc">Same classes all year.</div></label>
+        <label class="toggle-card" id="tc7-semester"><input type="radio" name="g7-format" value="semester" onchange="g7FormatChange()"><div class="tc-title">✂️ 6 Semester</div><div class="tc-desc">Different classes each semester.</div></label>
+        <label class="toggle-card" id="tc7-mixed"><input type="radio" name="g7-format" value="mixed" onchange="g7FormatChange()"><div class="tc-title">🔀 Mix</div><div class="tc-desc">Combo totaling 3 credits.</div></label>
+      </div>
+    </div>
+    <div id="g7-yearlong-section">
+      <div class="card">
+        <div class="card-title">Rank Your Year-Long Choices</div>
+        <div class="card-subtitle">Rank your top 4. Hover ℹ to read about a course.</div>
+        <div id="g7-yl-choices"></div>
+      </div>
+    </div>
+    <div id="g7-semester-section" class="hidden">
+      <div class="card">
+        <div class="card-title">Rank Your Semester Choices</div>
+        <div class="card-subtitle">Rank at least 6 choices plus backups. Hover ℹ to read about a course.</div>
+        <div class="info-box red"><strong>⚠ Note</strong>Do NOT select PE (Semester) if you chose full-year PE. Do NOT select Art if you chose full-year Art I & II.</div>
+        <div id="g7-sem-choices"></div>
+      </div>
+    </div>
+    <div id="g7-mixed-section" class="hidden">
+      <div class="card"><div class="card-title">Mixed — Year-Long Choices</div><div id="g7-myl-choices"></div></div>
+      <div class="card">
+        <div class="card-title">Mixed — Semester Choices</div>
+        <div class="info-box red"><strong>⚠ Note</strong>Do NOT select PE (Semester) if you chose full-year PE. Do NOT select Art if you chose full-year Art I & II.</div>
+        <div id="g7-msem-choices"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Music & Course Background</div>
+      <div class="card-subtitle">Check all that apply for correct placement.</div>
+      <label class="check-label"><input type="checkbox" id="g7-band6"> Took Band in 6th grade</label>
+      <label class="check-label"><input type="checkbox" id="g7-orch6"> Took Orchestra in 6th grade</label>
+      <label class="check-label"><input type="checkbox" id="g7-chorus6"> Took Chorus in 6th grade</label>
+      <label class="check-label"><input type="checkbox" id="g7-guitar6"> Took Guitar in 6th grade</label>
+      <label class="check-label"><input type="checkbox" id="g7-art6"> Took Exploratory Art in 6th grade</label>
+      <label class="check-label"><input type="checkbox" id="g7-is-navajo"> I am Navajo (required for Navajo Language)</label>
+    </div>
+    ${acknowledgmentHTML(7)}
+    <div class="submit-zone">
+      <div class="error-msg" id="g7-error"></div>
+      <button class="submit-btn" onclick="submitGrade7()">Submit My 7th Grade Selections →</button>
+    </div>
+    <div class="success-box" id="g7-success"></div>`;
+
+  buildSelects('g7-yl-choices',  g.yearLongElectives, 4, 'g7-yl',   'Year-Long Choice');
+  buildSelects('g7-sem-choices', g.semesterElectives,  8, 'g7-sem',  'Semester Choice');
+  buildSelects('g7-myl-choices', g.yearLongElectives,  3, 'g7-myl',  'Year-Long Choice');
+  buildSelects('g7-msem-choices',g.semesterElectives,  5, 'g7-msem', 'Semester Choice');
+}
+
+function g7FormatChange() {
+  const val = document.querySelector('input[name="g7-format"]:checked').value;
+  ['yearlong','semester','mixed'].forEach(k => {
+    document.getElementById('tc7-'+k).classList.toggle('selected', k===val);
+    document.getElementById('g7-'+k+'-section').classList.toggle('hidden', k!==val);
+  });
+}
+
+function submitGrade7() {
+  if(!validateStudentInfo(7,'g7-error')) return;
+  if(!isChecked('g7-ack')) return showError('g7-error','⚠ Please check the acknowledgment box before submitting.');
+  const fmt = document.querySelector('input[name="g7-format"]:checked').value;
+  const pe6 = document.querySelector('input[name="g7-pe6"]:checked').value;
+  let electives = [{label:'Format',value:fmt==='yearlong'?'3 Year-Long':fmt==='semester'?'6 Semester':'Mixed'},{label:'Took PE in 6th',value:pe6==='yes'?'Yes':'No'}];
+  if(fmt==='yearlong') {
+    if(!getVal('g7-yl-1')) return showError('g7-error','⚠ Please select at least your 1st year-long choice.');
+    for(let i=1;i<=4;i++){const v=getVal(`g7-yl-${i}`);if(v)electives.push({label:`Choice ${i}`,value:v});}
+  } else if(fmt==='semester') {
+    if(!getVal('g7-sem-1')) return showError('g7-error','⚠ Please select at least your 1st semester choice.');
+    for(let i=1;i<=8;i++){const v=getVal(`g7-sem-${i}`);if(v)electives.push({label:`Sem Choice ${i}`,value:v});}
+  } else {
+    if(!getVal('g7-myl-1')) return showError('g7-error','⚠ Please select at least one year-long choice.');
+    for(let i=1;i<=3;i++){const v=getVal(`g7-myl-${i}`);if(v)electives.push({label:`YL Choice ${i}`,value:v});}
+    for(let i=1;i<=5;i++){const v=getVal(`g7-msem-${i}`);if(v)electives.push({label:`Sem Choice ${i}`,value:v});}
+  }
+  const extras=[];
+  ['band6','orch6','chorus6','guitar6','art6'].forEach(k=>{ if(isChecked('g7-'+k)) extras.push({label:'Background',value:document.querySelector('#g7-'+k).parentElement.textContent.trim()}); });
+  extras.push({label:'Navajo',value:isChecked('g7-is-navajo')?'Yes':'No'});
+  const {last,first,id}=getStudentInfo(7);
+  showSuccess('g7-success',[{label:'Last Name',value:last},{label:'First Name',value:first},{label:'Student ID',value:id},{label:'Grade',value:'7th'}],electives,extras);
+}
+
+// ── 8TH GRADE ──────────────────────────────────────────────────────────────────
+function buildGrade8() {
+  const g = CFG.grades['8'];
+  document.getElementById('grade-8').innerHTML = `
+    ${studentInfoHTML(8)}
+    <div class="card">
+      <div class="card-title">Welcome, 8th Grader!</div>
+      <div class="card-subtitle">Health takes one semester, so you choose 2½ elective credits total.</div>
+      <div class="auto-list">${autoPills(g.autoAssigned)}</div>
+      <div class="info-box blue"><strong>How much to pick:</strong> 2 year-long + 1 semester, OR 5 semester classes, OR any mix equaling 2½ credits.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Step 1 — Pick Your Format</div>
+      <div class="option-toggle">
+        <label class="toggle-card selected" id="tc8-opt1"><input type="radio" name="g8-format" value="opt1" checked onchange="g8FormatChange()"><div class="tc-title">2 Year-Long + 1 Semester</div><div class="tc-desc">Two full-year + one half-year.</div></label>
+        <label class="toggle-card" id="tc8-opt2"><input type="radio" name="g8-format" value="opt2" onchange="g8FormatChange()"><div class="tc-title">5 Semester Classes</div><div class="tc-desc">All half-year classes.</div></label>
+        <label class="toggle-card" id="tc8-opt3"><input type="radio" name="g8-format" value="opt3" onchange="g8FormatChange()"><div class="tc-title">Mixed</div><div class="tc-desc">Any combo = 2½ credits.</div></label>
+      </div>
+    </div>
+    <div id="g8-opt1-section">
+      <div class="card">
+        <div class="card-title">Year-Long Elective Choices</div>
+        <div class="card-subtitle">Rank top choices — placed in your top 2 available. Hover ℹ to read about a course.</div>
+        <div id="g8-yl-choices"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Semester Elective Choice</div>
+        <div class="info-box red"><strong>⚠ Note</strong>Do NOT select PE (Semester) if you chose full-year PE. Do NOT select Art if you chose full-year Art I & II.</div>
+        <div id="g8-sem1-choices"></div>
+      </div>
+    </div>
+    <div id="g8-opt2-section" class="hidden">
+      <div class="card">
+        <div class="card-title">Your 5 Semester Elective Choices</div>
+        <div class="card-subtitle">Rank at least 5 choices plus backups. Hover ℹ to read about a course.</div>
+        <div id="g8-sem5-choices"></div>
+      </div>
+    </div>
+    <div id="g8-opt3-section" class="hidden">
+      <div class="card"><div class="card-title">Mixed — Year-Long Preferences</div><div id="g8-myl-choices"></div></div>
+      <div class="card"><div class="card-title">Mixed — Semester Preferences</div><div id="g8-msem-choices"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Music & Course Background</div>
+      <div class="card-subtitle">Check all that apply for correct placement.</div>
+      <label class="check-label"><input type="checkbox" id="g8-band6"> Took Band in 6th grade</label>
+      <label class="check-label"><input type="checkbox" id="g8-band7"> Took Band in 7th grade</label>
+      <label class="check-label"><input type="checkbox" id="g8-orch7"> Took Orchestra in 7th grade</label>
+      <label class="check-label"><input type="checkbox" id="g8-chorus7"> Took Chorus in 7th grade</label>
+      <label class="check-label"><input type="checkbox" id="g8-guitar7"> Took Guitar in 7th grade</label>
+      <label class="check-label"><input type="checkbox" id="g8-art7"> Took Art in 7th grade</label>
+      <label class="check-label"><input type="checkbox" id="g8-is-navajo"> I am Navajo (required for Navajo Language)</label>
+    </div>
+    ${acknowledgmentHTML(8)}
+    <div class="submit-zone">
+      <div class="error-msg" id="g8-error"></div>
+      <button class="submit-btn" onclick="submitGrade8()">Submit My 8th Grade Selections →</button>
+    </div>
+    <div class="success-box" id="g8-success"></div>`;
+
+  buildSelects('g8-yl-choices',   g.yearLongElectives, 4, 'g8-yl',   'Year-Long Choice');
+  buildSelects('g8-sem1-choices', g.semesterElectives,  4, 'g8-sem1', 'Semester Choice');
+  buildSelects('g8-sem5-choices', g.semesterElectives,  8, 'g8-sem5', 'Semester Choice');
+  buildSelects('g8-myl-choices',  g.yearLongElectives,  3, 'g8-myl',  'Year-Long Choice');
+  buildSelects('g8-msem-choices', g.semesterElectives,  5, 'g8-msem', 'Semester Choice');
+}
+
+function g8FormatChange() {
+  const val = document.querySelector('input[name="g8-format"]:checked').value;
+  ['opt1','opt2','opt3'].forEach(k => {
+    document.getElementById('tc8-'+k).classList.toggle('selected', k===val);
+    document.getElementById('g8-'+k+'-section').classList.toggle('hidden', k!==val);
+  });
+}
+
+function submitGrade8() {
+  if(!validateStudentInfo(8,'g8-error')) return;
+  if(!isChecked('g8-ack')) return showError('g8-error','⚠ Please check the acknowledgment box before submitting.');
+  const fmt = document.querySelector('input[name="g8-format"]:checked').value;
+  let electives=[{label:'Format',value:fmt==='opt1'?'2 Year-Long + 1 Semester':fmt==='opt2'?'5 Semester Classes':'Mixed'}];
+  if(fmt==='opt1') {
+    if(!getVal('g8-yl-1')||!getVal('g8-sem1-1')) return showError('g8-error','⚠ Please fill in your year-long and semester choices.');
+    for(let i=1;i<=4;i++){const v=getVal(`g8-yl-${i}`);if(v)electives.push({label:`YL Choice ${i}`,value:v});}
+    for(let i=1;i<=4;i++){const v=getVal(`g8-sem1-${i}`);if(v)electives.push({label:`Sem Choice ${i}`,value:v});}
+  } else if(fmt==='opt2') {
+    if(!getVal('g8-sem5-1')) return showError('g8-error','⚠ Please select your semester choices.');
+    for(let i=1;i<=8;i++){const v=getVal(`g8-sem5-${i}`);if(v)electives.push({label:`Choice ${i}`,value:v});}
+  } else {
+    if(!getVal('g8-myl-1')) return showError('g8-error','⚠ Please select at least one year-long choice.');
+    for(let i=1;i<=3;i++){const v=getVal(`g8-myl-${i}`);if(v)electives.push({label:`YL Choice ${i}`,value:v});}
+    for(let i=1;i<=5;i++){const v=getVal(`g8-msem-${i}`);if(v)electives.push({label:`Sem Choice ${i}`,value:v});}
+  }
+  const extras=[];
+  ['band6','band7','orch7','chorus7','guitar7','art7'].forEach(k=>{ if(isChecked('g8-'+k)) extras.push({label:'Background',value:document.querySelector('#g8-'+k).parentElement.textContent.trim()}); });
+  extras.push({label:'Navajo',value:isChecked('g8-is-navajo')?'Yes':'No'});
+  const {last,first,id}=getStudentInfo(8);
+  showSuccess('g8-success',[{label:'Last Name',value:last},{label:'First Name',value:first},{label:'Student ID',value:id},{label:'Grade',value:'8th'}],electives,extras);
+}
+</script>
+</body>
+</html>
