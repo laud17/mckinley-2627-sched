@@ -266,8 +266,8 @@
   }
   .intake-input {
     width: 100%; padding: 0.75rem 1rem;
-    background: rgba(255,255,255,0.92); border: 2px solid rgba(255,255,255,0.3);
-    border-radius: 10px; color: #1e293b; font-family: 'Nunito', sans-serif;
+    background: #ffffff !important; border: 2px solid #e2e8f0;
+    border-radius: 10px; color: #1e293b !important; font-family: 'Nunito', sans-serif;
     font-size: 0.95rem; font-weight: 600; outline: none;
     transition: border-color 0.15s, background 0.15s;
   }
@@ -1137,31 +1137,127 @@ function submitOtherSchool6() {
   box.style.display = 'block';
 }
 
-// ── 8TH GRADE PE LOCK ─────────────────────────────────────────────────────────
+// ── 8TH GRADE CROSS-GROUP LOCK ────────────────────────────────────────────────
+// Maps year-long course names to their semester equivalent (and vice versa)
+const G8_CROSS_MAP = {
+  'PE':           'PE (Semester)',
+  'PE (Semester)':'PE',
+  'Art I & Art II':'Art',
+  'Art':          'Art I & Art II',
+};
+
 function setupPELock8() {
-  // Watch all year-long selects; if PE is chosen, disable PE (Semester) in semester selects
-  const peName = 'PE';
-  const peSemName = 'PE (Semester)';
-  function checkPELock() {
-    const ylVals = [1,2,3,4].map(i => { const el = document.getElementById('g8-yl-'+i); return el ? el.value : ''; });
-    const peChosen = ylVals.includes(peName);
-    ['g8-sem1','g8-sem5','g8-msem'].forEach(prefix => {
-      [1,2,3,4,5,6,7,8].forEach(i => {
-        const sel = document.getElementById(prefix+'-'+i);
-        if(!sel) return;
+  // Called after buildSelects — attach cross-group listeners to all g8 selects
+  const ylPrefixes  = ['g8-yl'];
+  const semPrefixes = ['g8-sem1','g8-sem5','g8-msem'];
+  const ylCounts    = {'g8-yl':4};
+  const semCounts   = {'g8-sem1':4,'g8-sem5':8,'g8-msem':5};
+
+  function getYLVals() {
+    const vals = new Set();
+    ylPrefixes.forEach(p => {
+      for(let i=1;i<=(ylCounts[p]||4);i++){
+        const el=document.getElementById(p+'-'+i);
+        if(el && el.value) vals.add(el.value);
+      }
+    });
+    return vals;
+  }
+  function getSemVals() {
+    const vals = new Set();
+    semPrefixes.forEach(p => {
+      for(let i=1;i<=(semCounts[p]||8);i++){
+        const el=document.getElementById(p+'-'+i);
+        if(el && el.value) vals.add(el.value);
+      }
+    });
+    return vals;
+  }
+
+  function refreshCrossLock() {
+    const ylVals  = getYLVals();
+    const semVals = getSemVals();
+
+    // Block in semester dropdowns: anything picked year-long, plus its mapped equiv
+    const blockedInSem = new Set();
+    ylVals.forEach(v => {
+      blockedInSem.add(v);
+      if(G8_CROSS_MAP[v]) blockedInSem.add(G8_CROSS_MAP[v]);
+    });
+
+    // Block in year-long dropdowns: anything picked semester, plus its mapped equiv
+    const blockedInYL = new Set();
+    semVals.forEach(v => {
+      blockedInYL.add(v);
+      if(G8_CROSS_MAP[v]) blockedInYL.add(G8_CROSS_MAP[v]);
+    });
+
+    // Apply to semester selects
+    semPrefixes.forEach(p => {
+      for(let i=1;i<=(semCounts[p]||8);i++){
+        const sel=document.getElementById(p+'-'+i);
+        if(!sel) continue;
+        const myVal = sel.value;
         Array.from(sel.options).forEach(opt => {
-          if(opt.value === peSemName) {
-            opt.disabled = peChosen;
-            opt.textContent = peChosen ? peSemName + ' — (unavailable: year-long PE selected)' : peSemName;
+          if(!opt.value) return;
+          // blocked by cross-group AND not the current selection of THIS dropdown
+          const crossBlocked = blockedInSem.has(opt.value) && opt.value !== myVal;
+          // Also keep within-group duplicate prevention
+          const withinBlocked = Array.from(document.querySelectorAll(
+            `[id^="${p}-"]`)).some(s => s !== sel && s.value === opt.value && opt.value);
+          const blocked = crossBlocked || withinBlocked;
+          opt.disabled = blocked;
+          const course = courseMap[opt.value];
+          const suffix = course && course.limitedSpace ? ' ⚡ LIMITED' : '';
+          const code = course && course.code ? ' [#'+course.code+']' : '';
+          if(crossBlocked) {
+            opt.textContent = opt.value + ' — (selected in year-long)';
+          } else if(withinBlocked) {
+            opt.textContent = opt.value + ' — (already ranked)';
+          } else {
+            opt.textContent = opt.value + code + suffix;
           }
         });
-        if(peChosen && sel.value === peSemName) sel.value = '';
-      });
+        if(blockedInSem.has(myVal) && myVal !== '') sel.value = '';
+      }
+    });
+
+    // Apply to year-long selects
+    ylPrefixes.forEach(p => {
+      for(let i=1;i<=(ylCounts[p]||4);i++){
+        const sel=document.getElementById(p+'-'+i);
+        if(!sel) continue;
+        const myVal = sel.value;
+        Array.from(sel.options).forEach(opt => {
+          if(!opt.value) return;
+          const crossBlocked = blockedInYL.has(opt.value) && opt.value !== myVal;
+          const withinBlocked = Array.from(document.querySelectorAll(
+            `[id^="${p}-"]`)).some(s => s !== sel && s.value === opt.value && opt.value);
+          const blocked = crossBlocked || withinBlocked;
+          opt.disabled = blocked;
+          const course = courseMap[opt.value];
+          const suffix = course && course.limitedSpace ? ' ⚡ LIMITED' : '';
+          const code = course && course.code ? ' [#'+course.code+']' : '';
+          if(crossBlocked) {
+            opt.textContent = opt.value + ' — (selected in semester)';
+          } else if(withinBlocked) {
+            opt.textContent = opt.value + ' — (already ranked)';
+          } else {
+            opt.textContent = opt.value + code + suffix;
+          }
+        });
+        if(blockedInYL.has(myVal) && myVal !== '') sel.value = '';
+      }
     });
   }
-  [1,2,3,4].forEach(i => {
-    const sel = document.getElementById('g8-yl-'+i);
-    if(sel) sel.addEventListener('change', checkPELock);
+
+  // Attach listeners to all g8 selects
+  [...ylPrefixes,...semPrefixes].forEach(p => {
+    const count = ylCounts[p] || semCounts[p] || 8;
+    for(let i=1;i<=count;i++){
+      const sel=document.getElementById(p+'-'+i);
+      if(sel) sel.addEventListener('change', refreshCrossLock);
+    }
   });
 }
 
