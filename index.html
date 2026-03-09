@@ -364,7 +364,7 @@
 </div>
 
 <script>
-const COURSES_URL = 'courses.json';
+const COURSES_URL = 'courses.json?v=1773065718';
 const SHEET_URL   = 'https://script.google.com/macros/s/AKfycbwWWrqEf3TYBCp3YPWLiUIgyz-JeAJMueYenbQHhi7w9fVflotTd0CJ4hHSJhUVU0Tq/exec';
 let CFG = null;
 
@@ -833,6 +833,7 @@ function buildGrade6() {
   buildSelects('g6-yl-choices', g.yearLongElectives, 3, 'g6-yl', 'Year-Long Choice');
   buildSelects('g6-s1-choices', g.semesterElectives,  2, 'g6-s1', 'Semester 1 Choice');
   buildSelects('g6-s2-choices', g.semesterElectives,  2, 'g6-s2', 'Semester 2 Choice');
+  setupSemesterCrossLock6();
 }
 
 function g6FormatChange() {
@@ -1256,6 +1257,62 @@ function setupPELock8() {
       const sel=document.getElementById(p+'-'+i);
       if(sel) sel.addEventListener('change', refreshCrossLock);
     }
+  });
+}
+
+
+// ── 6TH GRADE SEMESTER CROSS-LOCK ─────────────────────────────────────────────
+// Picks in Semester 1 are blocked in Semester 2 and vice versa
+function setupSemesterCrossLock6() {
+  function refreshG6SemLock() {
+    const s1Vals = new Set([getVal('g6-s1-1'), getVal('g6-s1-2')].filter(Boolean));
+    const s2Vals = new Set([getVal('g6-s2-1'), getVal('g6-s2-2')].filter(Boolean));
+
+    // Block s1 choices in s2 dropdowns
+    [1,2].forEach(i => {
+      const sel = document.getElementById('g6-s2-' + i);
+      if(!sel) return;
+      const myVal = sel.value;
+      Array.from(sel.options).forEach(opt => {
+        if(!opt.value) return;
+        const withinBlocked = [getVal('g6-s2-1'), getVal('g6-s2-2')]
+          .filter((v,idx) => idx !== i-1).includes(opt.value);
+        const crossBlocked = s1Vals.has(opt.value) && opt.value !== myVal;
+        opt.disabled = withinBlocked || crossBlocked;
+        const course = courseMap[opt.value];
+        const suffix = course && course.limitedSpace ? ' ⚡ LIMITED' : '';
+        if(crossBlocked) opt.textContent = opt.value + ' — (chosen in Semester 1)';
+        else if(withinBlocked) opt.textContent = opt.value + ' — (already ranked)';
+        else opt.textContent = opt.value + suffix;
+      });
+      if(s1Vals.has(myVal)) sel.value = '';
+    });
+
+    // Block s2 choices in s1 dropdowns
+    [1,2].forEach(i => {
+      const sel = document.getElementById('g6-s1-' + i);
+      if(!sel) return;
+      const myVal = sel.value;
+      Array.from(sel.options).forEach(opt => {
+        if(!opt.value) return;
+        const withinBlocked = [getVal('g6-s1-1'), getVal('g6-s1-2')]
+          .filter((v,idx) => idx !== i-1).includes(opt.value);
+        const crossBlocked = s2Vals.has(opt.value) && opt.value !== myVal;
+        opt.disabled = withinBlocked || crossBlocked;
+        const course = courseMap[opt.value];
+        const suffix = course && course.limitedSpace ? ' ⚡ LIMITED' : '';
+        if(crossBlocked) opt.textContent = opt.value + ' — (chosen in Semester 2)';
+        else if(withinBlocked) opt.textContent = opt.value + ' — (already ranked)';
+        else opt.textContent = opt.value + suffix;
+      });
+      if(s2Vals.has(myVal)) sel.value = '';
+    });
+  }
+
+  // Attach to all 4 semester selects
+  ['g6-s1-1','g6-s1-2','g6-s2-1','g6-s2-2'].forEach(id => {
+    const sel = document.getElementById(id);
+    if(sel) sel.addEventListener('change', refreshG6SemLock);
   });
 }
 
