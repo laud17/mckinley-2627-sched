@@ -534,8 +534,7 @@ function buildSelects(containerId, courses, count, prefix, label = 'Choice') {
     const ord = ordinals[i] || 'th';
     const opts = courses.map(course => {
       const suffix = course.limitedSpace ? ' ⚡ LIMITED' : '';
-      const code = course.code ? ' [#' + course.code + ']' : '';
-      return `<option value="${course.name}">${course.name}${code}${suffix}</option>`;
+      return `<option value="${course.name}">${course.name}${suffix}</option>`;
     }).join('');
 
     c.insertAdjacentHTML('beforeend', `
@@ -1140,10 +1139,10 @@ function submitOtherSchool6() {
 // ── 8TH GRADE CROSS-GROUP LOCK ────────────────────────────────────────────────
 // Maps year-long course names to their semester equivalent (and vice versa)
 const G8_CROSS_MAP = {
-  'PE':           'PE (Semester)',
-  'PE (Semester)':'PE',
-  'Art I & Art II':'Art',
-  'Art':          'Art I & Art II',
+  'PE (#91000)':              'PE (Semester) (#9100s)',
+  'PE (Semester) (#9100s)':   'PE (#91000)',
+  'Art I & Art II (#70901/70902)': 'Art (#70901/70902)',
+  'Art (#70901/70902)':       'Art I & Art II (#70901/70902)',
 };
 
 function setupPELock8() {
@@ -1209,13 +1208,12 @@ function setupPELock8() {
           opt.disabled = blocked;
           const course = courseMap[opt.value];
           const suffix = course && course.limitedSpace ? ' ⚡ LIMITED' : '';
-          const code = course && course.code ? ' [#'+course.code+']' : '';
           if(crossBlocked) {
             opt.textContent = opt.value + ' — (selected in year-long)';
           } else if(withinBlocked) {
             opt.textContent = opt.value + ' — (already ranked)';
           } else {
-            opt.textContent = opt.value + code + suffix;
+            opt.textContent = opt.value + suffix;
           }
         });
         if(blockedInSem.has(myVal) && myVal !== '') sel.value = '';
