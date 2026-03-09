@@ -129,17 +129,17 @@
 
   /* Info button */
   .info-btn {
-    flex-shrink: 0; width: 2rem; height: 2rem;
-    border-radius: 50%; border: 2px solid var(--border);
-    background: white; color: var(--muted);
-    font-size: 0.85rem; font-weight: 800;
+    flex-shrink: 0; width: 2.2rem; height: 2.2rem;
+    border-radius: 50%; border: 2px solid var(--blue);
+    background: #eff6ff; color: var(--blue);
+    font-size: 1rem; font-weight: 900;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.15s; position: relative;
     font-family: 'Space Mono', monospace;
   }
   .info-btn:hover { border-color: var(--sky); color: var(--blue); background: #eff6ff; }
   .info-btn.has-desc { border-color: var(--sky); color: var(--blue); }
-  .info-btn.disabled-btn { opacity: 0.3; cursor: default; pointer-events: none; }
+  .info-btn.disabled-btn { opacity: 0.25; cursor: default; pointer-events: none; }
 
   /* ── POPOVER ──────────────────────────────────────────── */
   .desc-popover {
@@ -266,13 +266,13 @@
   }
   .intake-input {
     width: 100%; padding: 0.75rem 1rem;
-    background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.15);
-    border-radius: 10px; color: white; font-family: 'Nunito', sans-serif;
+    background: rgba(255,255,255,0.92); border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 10px; color: #1e293b; font-family: 'Nunito', sans-serif;
     font-size: 0.95rem; font-weight: 600; outline: none;
     transition: border-color 0.15s, background 0.15s;
   }
-  .intake-input::placeholder { color: rgba(255,255,255,0.3); }
-  .intake-input:focus { border-color: var(--gold); background: rgba(255,255,255,0.1); }
+  .intake-input::placeholder { color: #94a3b8; }
+  .intake-input:focus { border-color: var(--gold); background: white; }
   .intake-input.intake-error { border-color: #ef4444; }
 
   /* Grade radio cards on intake */
@@ -534,7 +534,8 @@ function buildSelects(containerId, courses, count, prefix, label = 'Choice') {
     const ord = ordinals[i] || 'th';
     const opts = courses.map(course => {
       const suffix = course.limitedSpace ? ' ⚡ LIMITED' : '';
-      return `<option value="${course.name}">${course.name}${suffix}</option>`;
+      const code = course.code ? ' [#' + course.code + ']' : '';
+      return `<option value="${course.name}">${course.name}${code}${suffix}</option>`;
     }).join('');
 
     c.insertAdjacentHTML('beforeend', `
@@ -710,7 +711,7 @@ function acknowledgmentHTML(grade) {
       <div class="card-title">Course Selection Acknowledgment</div>
       <div class="ack-box">
         <p>Classes are created based on the number of students who choose each course. Please read the course descriptions and choose carefully. <strong>Choosing a class means you are committing to staying in that class for the full term.</strong></p>
-        <p>Once schedules are created, changes will not be made unless the school needs to make a program change.</p>
+        <p style="color:var(--red);font-weight:800;">Once schedules are created, changes will not be made unless the school needs to make a program change.</p>
         <label class="ack-check"><input type="checkbox" id="g${grade}-ack"> I understand that by submitting this form, my elective choices are final.</label>
       </div>
     </div>`;
@@ -731,6 +732,59 @@ function buildGrade6() {
       <div class="card-subtitle">You're joining the 6th Grade Academy. Here's what you already have locked in:</div>
       <div class="auto-list">${autoPills(g.autoAssigned)}</div>
       <div class="info-box blue"><strong>Your turn!</strong> You get ONE elective slot — either one full-year class OR two semester classes (one per semester).</div>
+    </div>
+    <div class="card" id="g6-enrollment-card">
+      <div class="card-title">Enrollment Verification</div>
+      <div class="info-box gold" style="margin-bottom:1rem;"><strong>Please read carefully.</strong> You are receiving this course card because APS currently has you listed as attending McKinley Middle School for 6th grade. If you <strong>plan to attend McKinley</strong>, please complete this form. If you <strong>will be attending a different school</strong>, please enter the name of that school and indicate whether you have completed the APS transfer or enrollment process.</div>
+      <div style="margin-bottom:1rem;">
+        <label class="field-label" for="g6-attending-mckinley">Will you be attending McKinley next year?</label>
+        <div style="display:flex;gap:0.6rem;margin-top:0.4rem;">
+          <label class="toggle-card selected" id="tc6-attend-yes" style="flex:1;min-width:0;padding:0.75rem;">
+            <input type="radio" name="g6-attend" value="yes" checked onchange="g6AttendChange()">
+            <div class="tc-title" style="font-size:0.88rem;">✅ Yes, McKinley</div>
+          </label>
+          <label class="toggle-card" id="tc6-attend-no" style="flex:1;min-width:0;padding:0.75rem;">
+            <input type="radio" name="g6-attend" value="no" onchange="g6AttendChange()">
+            <div class="tc-title" style="font-size:0.88rem;">🏫 Different School</div>
+          </label>
+        </div>
+      </div>
+      <div id="g6-other-school-section" class="hidden">
+        <div style="margin-bottom:0.75rem;">
+          <label class="field-label" for="g6-other-school">Name of Other School</label>
+          <input type="text" id="g6-other-school" placeholder="Enter school name">
+        </div>
+        <div style="margin-bottom:0.75rem;">
+          <label class="field-label">Have you completed the APS transfer or enrollment process?</label>
+          <div style="display:flex;gap:0.6rem;margin-top:0.4rem;">
+            <label class="toggle-card" id="tc6-transfer-yes" style="flex:1;min-width:0;padding:0.75rem;">
+              <input type="radio" name="g6-transfer" value="yes" onchange="g6TransferChange()">
+              <div class="tc-title" style="font-size:0.88rem;">✅ Yes, completed</div>
+            </label>
+            <label class="toggle-card" id="tc6-transfer-no" style="flex:1;min-width:0;padding:0.75rem;">
+              <input type="radio" name="g6-transfer" value="no" onchange="g6TransferChange()">
+              <div class="tc-title" style="font-size:0.88rem;">❌ Not yet</div>
+            </label>
+          </div>
+        </div>
+        <button onclick="submitOtherSchool6()" class="submit-btn" style="width:100%;margin-top:0.5rem;">Submit — I'm Attending a Different School →</button>
+        <div class="success-box" id="g6-otherschool-success" style="margin-top:1rem;"></div>
+      </div>
+    </div>
+    <div id="g6-mckinley-form">
+    <div class="card">
+      <div class="card-title">Available Elective Courses</div>
+      <div class="card-subtitle">Here are your options before you choose your format.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.5rem;">
+        <div>
+          <div style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--blue);margin-bottom:0.5rem;">📅 Full-Year Options</div>
+          ${g.yearLongElectives.map(c=>`<div style="font-size:0.88rem;padding:0.3rem 0;border-bottom:1px solid #f1f5f9;color:var(--text);font-weight:600;">${c.name}</div>`).join('')}
+        </div>
+        <div>
+          <div style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--blue);margin-bottom:0.5rem;">✂️ Semester Options</div>
+          ${g.semesterElectives.map(c=>`<div style="font-size:0.88rem;padding:0.3rem 0;border-bottom:1px solid #f1f5f9;color:var(--text);font-weight:600;">${c.name}</div>`).join('')}
+        </div>
+      </div>
     </div>
     <div class="card">
       <div class="card-title">Step 1 — Pick Your Format</div>
@@ -774,7 +828,8 @@ function buildGrade6() {
       <div class="error-msg" id="g6-error"></div>
       <button class="submit-btn" onclick="submitGrade6()">Submit My 6th Grade Selections →</button>
     </div>
-    <div class="success-box" id="g6-success"></div>`;
+    <div class="success-box" id="g6-success"></div>
+    </div><!-- end g6-mckinley-form -->`;
 
   buildSelects('g6-yl-choices', g.yearLongElectives, 3, 'g6-yl', 'Year-Long Choice');
   buildSelects('g6-s1-choices', g.semesterElectives,  2, 'g6-s1', 'Semester 1 Choice');
@@ -836,6 +891,20 @@ function buildGrade7() {
       </div>
     </div>
     <div class="card">
+      <div class="card-title">Available Elective Courses</div>
+      <div class="card-subtitle">Review your options before choosing a format.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.5rem;">
+        <div>
+          <div style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--blue);margin-bottom:0.5rem;">📅 Full-Year Options</div>
+          ${g.yearLongElectives.map(c=>`<div style="font-size:0.85rem;padding:0.3rem 0;border-bottom:1px solid #f1f5f9;color:var(--text);font-weight:600;">${c.name}</div>`).join('')}
+        </div>
+        <div>
+          <div style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--blue);margin-bottom:0.5rem;">✂️ Semester Options</div>
+          ${g.semesterElectives.map(c=>`<div style="font-size:0.85rem;padding:0.3rem 0;border-bottom:1px solid #f1f5f9;color:var(--text);font-weight:600;">${c.name}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="card">
       <div class="card-title">Step 1 — Pick Your Format</div>
       <div class="option-toggle">
         <label class="toggle-card selected" id="tc7-yearlong"><input type="radio" name="g7-format" value="yearlong" checked onchange="g7FormatChange()"><div class="tc-title">📅 3 Year-Long</div><div class="tc-desc">Same classes all year.</div></label>
@@ -873,7 +942,6 @@ function buildGrade7() {
       <label class="check-label"><input type="checkbox" id="g7-orch6"> Took Orchestra in 6th grade</label>
       <label class="check-label"><input type="checkbox" id="g7-chorus6"> Took Chorus in 6th grade</label>
       <label class="check-label"><input type="checkbox" id="g7-guitar6"> Took Guitar in 6th grade</label>
-      <label class="check-label"><input type="checkbox" id="g7-art6"> Took Exploratory Art in 6th grade</label>
       <label class="check-label"><input type="checkbox" id="g7-is-navajo"> I am Navajo (required for Navajo Language)</label>
     </div>
     ${acknowledgmentHTML(7)}
@@ -915,7 +983,7 @@ function submitGrade7() {
     for(let i=1;i<=5;i++){const v=getVal(`g7-msem-${i}`);if(v)electives.push({label:`Sem Choice ${i}`,value:v});}
   }
   const extras=[];
-  ['band6','orch6','chorus6','guitar6','art6'].forEach(k=>{ if(isChecked('g7-'+k)) extras.push({label:'Background',value:document.querySelector('#g7-'+k).parentElement.textContent.trim()}); });
+  ['band6','orch6','chorus6','guitar6'].forEach(k=>{ if(isChecked('g7-'+k)) extras.push({label:'Background',value:document.querySelector('#g7-'+k).parentElement.textContent.trim()}); });
   extras.push({label:'Navajo',value:isChecked('g7-is-navajo')?'Yes':'No'});
   const {last,first,id}=getStudentInfo(7);
   showSuccess('g7-success',[{label:'Last Name',value:last},{label:'First Name',value:first},{label:'Student ID',value:id},{label:'Grade',value:'7th'}],electives,extras);
@@ -928,9 +996,23 @@ function buildGrade8() {
     ${studentInfoHTML(8)}
     <div class="card">
       <div class="card-title">Welcome, 8th Grader!</div>
-      <div class="card-subtitle">Health takes one semester, so you choose 2½ elective credits total.</div>
+      <div class="card-subtitle">Your core classes are locked in. Health takes one semester, so you choose 2½ elective credits total.</div>
       <div class="auto-list">${autoPills(g.autoAssigned)}</div>
-      <div class="info-box blue"><strong>How much to pick:</strong> 2 year-long + 1 semester, OR 5 semester classes, OR any mix equaling 2½ credits.</div>
+      <div class="info-box blue"><strong>Number of Classes to Choose:</strong> 2 year-long + 1 semester, OR 5 semester classes, OR any mix equaling 2½ credits.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Available Elective Courses</div>
+      <div class="card-subtitle">Review your options before choosing a format.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.5rem;">
+        <div>
+          <div style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--blue);margin-bottom:0.5rem;">📅 Full-Year Options</div>
+          ${g.yearLongElectives.map(c=>`<div style="font-size:0.85rem;padding:0.3rem 0;border-bottom:1px solid #f1f5f9;color:var(--text);font-weight:600;">${c.name}</div>`).join('')}
+        </div>
+        <div>
+          <div style="font-size:0.78rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--blue);margin-bottom:0.5rem;">✂️ Semester Options</div>
+          ${g.semesterElectives.map(c=>`<div style="font-size:0.85rem;padding:0.3rem 0;border-bottom:1px solid #f1f5f9;color:var(--text);font-weight:600;">${c.name}</div>`).join('')}
+        </div>
+      </div>
     </div>
     <div class="card">
       <div class="card-title">Step 1 — Pick Your Format</div>
@@ -968,6 +1050,7 @@ function buildGrade8() {
       <div class="card-subtitle">Check all that apply for correct placement.</div>
       <label class="check-label"><input type="checkbox" id="g8-band6"> Took Band in 6th grade</label>
       <label class="check-label"><input type="checkbox" id="g8-band7"> Took Band in 7th grade</label>
+      <label class="check-label"><input type="checkbox" id="g8-orch6"> Took Orchestra in 6th grade</label>
       <label class="check-label"><input type="checkbox" id="g8-orch7"> Took Orchestra in 7th grade</label>
       <label class="check-label"><input type="checkbox" id="g8-chorus7"> Took Chorus in 7th grade</label>
       <label class="check-label"><input type="checkbox" id="g8-guitar7"> Took Guitar in 7th grade</label>
@@ -982,6 +1065,7 @@ function buildGrade8() {
     <div class="success-box" id="g8-success"></div>`;
 
   buildSelects('g8-yl-choices',   g.yearLongElectives, 4, 'g8-yl',   'Year-Long Choice');
+  setupPELock8();
   buildSelects('g8-sem1-choices', g.semesterElectives,  4, 'g8-sem1', 'Semester Choice');
   buildSelects('g8-sem5-choices', g.semesterElectives,  8, 'g8-sem5', 'Semester Choice');
   buildSelects('g8-myl-choices',  g.yearLongElectives,  3, 'g8-myl',  'Year-Long Choice');
@@ -1014,11 +1098,73 @@ function submitGrade8() {
     for(let i=1;i<=5;i++){const v=getVal(`g8-msem-${i}`);if(v)electives.push({label:`Sem Choice ${i}`,value:v});}
   }
   const extras=[];
-  ['band6','band7','orch7','chorus7','guitar7','art7'].forEach(k=>{ if(isChecked('g8-'+k)) extras.push({label:'Background',value:document.querySelector('#g8-'+k).parentElement.textContent.trim()}); });
+  ['band6','band7','orch6','orch7','chorus7','guitar7','art7'].forEach(k=>{ if(isChecked('g8-'+k)) extras.push({label:'Background',value:document.querySelector('#g8-'+k).parentElement.textContent.trim()}); });
   extras.push({label:'Navajo',value:isChecked('g8-is-navajo')?'Yes':'No'});
   const {last,first,id}=getStudentInfo(8);
   showSuccess('g8-success',[{label:'Last Name',value:last},{label:'First Name',value:first},{label:'Student ID',value:id},{label:'Grade',value:'8th'}],electives,extras);
 }
+
+// ── 6TH GRADE ENROLLMENT LOGIC ────────────────────────────────────────────────
+function g6AttendChange() {
+  const val = document.querySelector('input[name="g6-attend"]:checked').value;
+  document.getElementById('tc6-attend-yes').classList.toggle('selected', val==='yes');
+  document.getElementById('tc6-attend-no').classList.toggle('selected', val==='no');
+  document.getElementById('g6-other-school-section').classList.toggle('hidden', val!=='no');
+  document.getElementById('g6-mckinley-form').classList.toggle('hidden', val!=='yes');
+}
+
+function g6TransferChange() {
+  const val = document.querySelector('input[name="g6-transfer"]:checked')?.value;
+  document.getElementById('tc6-transfer-yes')?.classList.toggle('selected', val==='yes');
+  document.getElementById('tc6-transfer-no')?.classList.toggle('selected', val==='no');
+}
+
+function submitOtherSchool6() {
+  const school = document.getElementById('g6-other-school').value.trim();
+  const transfer = document.querySelector('input[name="g6-transfer"]:checked')?.value;
+  if(!school) { alert('Please enter the name of the other school.'); return; }
+  if(!transfer) { alert('Please indicate whether you have completed the APS transfer/enrollment process.'); return; }
+  const payload = {
+    last: STUDENT.last, first: STUDENT.first, id: STUDENT.id,
+    grade: '6th', format: 'NOT ATTENDING McKINLEY',
+    choices: ['Other school: ' + school, 'APS transfer completed: ' + (transfer==='yes'?'Yes':'No')],
+    extras: []
+  };
+  fetch(SHEET_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+    .catch(err => console.warn('Sheet POST failed:', err));
+  const box = document.getElementById('g6-otherschool-success');
+  box.innerHTML = '<h3>✅ Response Recorded</h3><p style="font-size:0.9rem;">Thank you, ' + STUDENT.first + '. Your response has been submitted. If your plans change, please contact McKinley directly.</p>';
+  box.style.display = 'block';
+}
+
+// ── 8TH GRADE PE LOCK ─────────────────────────────────────────────────────────
+function setupPELock8() {
+  // Watch all year-long selects; if PE is chosen, disable PE (Semester) in semester selects
+  const peName = 'PE';
+  const peSemName = 'PE (Semester)';
+  function checkPELock() {
+    const ylVals = [1,2,3,4].map(i => { const el = document.getElementById('g8-yl-'+i); return el ? el.value : ''; });
+    const peChosen = ylVals.includes(peName);
+    ['g8-sem1','g8-sem5','g8-msem'].forEach(prefix => {
+      [1,2,3,4,5,6,7,8].forEach(i => {
+        const sel = document.getElementById(prefix+'-'+i);
+        if(!sel) return;
+        Array.from(sel.options).forEach(opt => {
+          if(opt.value === peSemName) {
+            opt.disabled = peChosen;
+            opt.textContent = peChosen ? peSemName + ' — (unavailable: year-long PE selected)' : peSemName;
+          }
+        });
+        if(peChosen && sel.value === peSemName) sel.value = '';
+      });
+    });
+  }
+  [1,2,3,4].forEach(i => {
+    const sel = document.getElementById('g8-yl-'+i);
+    if(sel) sel.addEventListener('change', checkPELock);
+  });
+}
+
 </script>
 </body>
 </html>
